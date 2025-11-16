@@ -1,0 +1,8 @@
+syntax = "proto3";
+package hadron;
+message Quark { string id = 1; string type = 2; bool isAntiparticle = 3; }
+message CreateQuarkRequest { string type = 1; bool isAntiparticle = 2; }
+message CreateQuarkResponse { Quark quark = 1; }
+message GetQuarkRequest { string id = 1; }
+message GetQuarkResponse { Quark quark = 1; }
+service QuarkService { rpc CreateQuark(CreateQuarkRequest) returns (CreateQuarkResponse); rpc GetQuark(GetQuarkRequest) returns (GetQuarkResponse); }

@@ -1,0 +1,82 @@
+@startuml
+title 📚 Hadron System – Domain Storytelling (Pédagogique)
+
+' =====================================================
+' CONTEXTE 1 – Production des Quarks
+' =====================================================
+package "ParticleBC (Quark Factory)" {
+
+  class QuarkAggregate {
+    - id: QuarkId
+    - type: QuarkType
+    - isAntiparticle: bool
+    + register(type, isAntiparticle)
+  }
+
+  note right of QuarkAggregate
+    La "source de vérité" des quarks.
+    Chaque création est validée.
+  end note
+
+  class QuarkCreated <<event>>
+  note bottom of QuarkCreated
+    Historique immuable :
+    un quark a été créé.
+  end note
+}
+
+' =====================================================
+' CONTEXTE 2 – Assemblage des Hadrons
+' =====================================================
+package "HadronBC (Hadron Lab)" {
+
+  class HadronAggregate {
+    - quarkIds: QuarkId[]
+    - type: string
+    + create(quarkIds, type)
+  }
+
+  note right of HadronAggregate
+    Regroupe les quarks pour former des hadrons.
+  end note
+
+  class HadronCompositionPolicy {
+    + validate(quarkIds): bool
+  }
+
+  note bottom of HadronCompositionPolicy
+    Règles :
+    - 3 quarks → Baryon
+    - 2 quarks (1 antiquark) → Méson
+  end note
+
+  class HadronCreationService {
+    + assemble(quarkIds)
+  }
+
+  class HadronCreated <<event>>
+}
+
+' =====================================================
+' Infrastructure simplifiée
+' =====================================================
+package "Infrastructure" {
+  class InMemoryQuarkRepository
+  class InMemoryHadronRepository
+  class InMemoryEventStore
+  class QuarkProjectionRepository
+}
+
+' =====================================================
+' Flux et relations
+' =====================================================
+QuarkAggregate --> QuarkCreated : crée
+QuarkCreated ..> InMemoryEventStore : stocké
+InMemoryEventStore --> QuarkProjectionRepository : projection
+
+QuarkProjectionRepository ..> HadronCompositionPolicy : fournit quarks
+HadronCompositionPolicy --> HadronCreationService : valide
+HadronCreationService --> HadronCreated : crée
+HadronCreationService --> InMemoryHadronRepository : sauvegarde
+
+@enduml

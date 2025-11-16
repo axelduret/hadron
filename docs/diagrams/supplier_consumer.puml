@@ -1,0 +1,40 @@
+@startuml
+title ParticleBC (Supplier) -> HadronBC (Consumer) - Event Sourcing + CQRS
+package "ParticleBC (Supplier)" {
+  class QuarkAggregate {
+    - id: QuarkId
+    - type: QuarkType
+    - isAntiparticle: bool
+    + register(type: string, isAntiparticle: bool)
+  }
+  interface QuarkWriteRepositoryInterface
+  interface QuarkReadRepositoryInterface
+  class QuarkCreated <<event>>
+}
+package "HadronBC (Consumer)" {
+  class HadronAggregate {
+    - quarkIds: QuarkId[]
+    - type: string
+    + reconstitute(quarkIds: QuarkId[], type: string)
+  }
+  class HadronCompositionPolicy
+  class HadronCreationService
+  class HadronCreated <<event>>
+  interface HadronWriteRepositoryInterface
+}
+package "Infrastructure" {
+  class InMemoryQuarkRepository
+  class InMemoryHadronRepository
+  class InMemoryEventStore
+  class QuarkProjectionRepository
+}
+QuarkAggregate -down-> QuarkWriteRepositoryInterface
+QuarkWriteRepositoryInterface ..> InMemoryQuarkRepository
+QuarkAggregate --> QuarkCreated
+QuarkCreated ..> InMemoryEventStore
+InMemoryEventStore --> QuarkProjectionRepository : projection
+QuarkProjectionRepository ..> HadronCompositionPolicy
+HadronCompositionPolicy --> HadronCreationService
+HadronCreationService --> HadronWriteRepositoryInterface
+HadronWriteRepositoryInterface ..> InMemoryHadronRepository
+@enduml

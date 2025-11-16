@@ -1,0 +1,92 @@
+@startuml
+title 📚 Système Hadron – Version Commentée (pédagogique)
+
+' ===========================
+' CONTEXTE 1 - PRODUCTION DE QUARKS
+' ===========================
+package "ParticleBC (Production de Quarks)" {
+
+  class QuarkAggregate {
+    - id: QuarkId
+    - type: QuarkType
+    - isAntiparticle: bool
+    + register(type: string, isAntiparticle: bool)
+  }
+
+  note right of QuarkAggregate
+    Ici, les quarks sont créés officiellement.
+    La création suit les règles métier validées.
+  end note
+
+  interface QuarkWriteRepositoryInterface
+  interface QuarkReadRepositoryInterface
+
+  class QuarkCreated <<event>>
+
+  note bottom of QuarkCreated
+    Un événement historique immuable.
+    Trace qu'un quark a été créé.
+  end note
+}
+
+' ===========================
+' CONTEXTE 2 - ASSEMBLAGE DE HADRONS
+' ===========================
+package "HadronBC (Assemblage de Hadrons)" {
+
+  class HadronAggregate {
+    - quarkIds: QuarkId[]
+    - type: string
+    + create(quarkIds: QuarkId[], type: string)
+  }
+
+  note right of HadronAggregate
+    Compose plusieurs quarks pour créer
+    une particule plus complexe.
+  end note
+
+  class HadronCompositionPolicy {
+    + validate(quarkIds: QuarkId[]): bool
+  }
+
+  note bottom of HadronCompositionPolicy
+    Règles scientifiques :
+    - 3 quarks => Baryon
+    - 2 quarks dont 1 antiquark => Méson
+  end note
+
+  class HadronCreationService {
+    + assemble(quarkIds: QuarkId[])
+  }
+
+  class HadronCreated <<event>>
+}
+
+' ===========================
+' INFRASTRUCTURE TECHNIQUE
+' ===========================
+package "Infrastructure" {
+  class InMemoryQuarkRepository
+  class InMemoryHadronRepository
+  class InMemoryEventStore
+  class QuarkProjectionRepository
+}
+
+' ===========================
+' RELATIONS
+' ===========================
+
+QuarkAggregate --> QuarkCreated : emits
+QuarkAggregate --> QuarkWriteRepositoryInterface
+QuarkWriteRepositoryInterface ..> InMemoryQuarkRepository
+
+QuarkCreated ..> InMemoryEventStore : stored as event
+
+InMemoryEventStore --> QuarkProjectionRepository : projection
+
+QuarkProjectionRepository ..> HadronCompositionPolicy : fournit les quarks
+HadronCompositionPolicy --> HadronCreationService : si valides
+HadronCreationService --> HadronCreated : emits
+HadronCreationService --> HadronWriteRepositoryInterface
+HadronWriteRepositoryInterface ..> InMemoryHadronRepository
+@enduml

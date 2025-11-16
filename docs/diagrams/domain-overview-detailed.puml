@@ -1,0 +1,70 @@
+@startuml
+title System Hadron – Detailed Technical View (CQRS + Event Sourcing)
+
+' ===========================
+' Particle Bounded Context (Supplier)
+' ===========================
+package "ParticleBC" {
+  class QuarkAggregate {
+    - id: QuarkId
+    - type: QuarkType
+    - isAntiparticle: bool
+    + register(type: QuarkType, isAntiparticle: bool)
+    + reconstitute(id: QuarkId, type: QuarkType, isAntiparticle: bool)
+  }
+
+  interface QuarkWriteRepositoryInterface
+  interface QuarkReadRepositoryInterface
+
+  class QuarkCreated <<event>>
+}
+
+' ===========================
+' Hadron Bounded Context (Consumer)
+' ===========================
+package "HadronBC" {
+  class HadronAggregate {
+    - quarkIds: QuarkId[]
+    - type: HadronType
+    + create(quarkIds: QuarkId[], type: HadronType)
+    + reconstitute(quarkIds: QuarkId[], type: HadronType)
+  }
+
+  class HadronCompositionPolicy {
+    + validate(quarkIds: QuarkId[]): bool
+  }
+
+  class HadronCreationService {
+    + assemble(quarkIds: QuarkId[]): HadronAggregate
+  }
+
+  class HadronCreated <<event>>
+}
+
+' ===========================
+' Infrastructure
+' ===========================
+package "Infrastructure" {
+  class InMemoryQuarkRepository
+  class InMemoryHadronRepository
+  class InMemoryEventStore
+  class QuarkProjectionRepository
+}
+
+' ===========================
+' Relations
+' ===========================
+QuarkAggregate --> QuarkCreated : emits event
+QuarkAggregate --> QuarkWriteRepositoryInterface
+QuarkWriteRepositoryInterface ..> InMemoryQuarkRepository
+
+QuarkCreated ..> InMemoryEventStore : historical storage
+InMemoryEventStore --> QuarkProjectionRepository : projections
+
+QuarkProjectionRepository ..> HadronCompositionPolicy : provides quark data
+HadronCompositionPolicy --> HadronCreationService : validated
+HadronCreationService --> HadronCreated : emits
+HadronCreationService --> HadronWriteRepositoryInterface
+HadronWriteRepositoryInterface ..> InMemoryHadronRepository
+
+@enduml

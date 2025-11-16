@@ -1,0 +1,7 @@
+site_name: Hadron Domain Docs
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - API:
+    - REST: api_rest.md
+    - gRPC: api_grpc.md
