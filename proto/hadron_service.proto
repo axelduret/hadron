@@ -1,5 +1,17 @@
 syntax = "proto3";
+
 package hadron;
-message CreateHadronRequest { repeated string quark_ids = 1; }
-message CreateHadronResponse { string id = 1; string type = 2; repeated string quark_ids = 3; }
-service HadronService { rpc CreateHadron(CreateHadronRequest) returns (CreateHadronResponse); }
+
+message CreateHadronRequest {
+  repeated string quark_ids = 1;
+}
+
+message CreateHadronResponse {
+  string id = 1;
+  string type = 2;
+  repeated string quark_ids = 3;
+}
+
+service HadronService {
+  rpc CreateHadron(CreateHadronRequest) returns (CreateHadronResponse);
+}

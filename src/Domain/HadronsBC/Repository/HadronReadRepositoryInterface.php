@@ -6,7 +6,8 @@ namespace App\Domain\HadronsBC\Repository;
 
 use App\Domain\HadronsBC\Aggregates\HadronAggregate;
 
-interface HadronWriteRepositoryInterface
+interface HadronReadRepositoryInterface
 {
-    public function save(HadronAggregate $hadron): void;
+    /** @return array<HadronAggregate> */
+    public function findAll(): array;
 }
