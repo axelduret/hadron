@@ -1,7 +1,9 @@
 services:
   php:
     image: dunglas/frankenphp
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     environment:
       - SERVER_NAME=:${PORT:-8000}
     ports:
