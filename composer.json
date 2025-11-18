@@ -10,13 +10,14 @@
   "type": "project",
   "require": {
     "php": ">=8.2",
-    "ramsey/uuid": "^4.7",
-    "slim/slim": "^4.10",
-    "nyholm/psr7": "^1.5"
+    "ramsey/uuid": "^4.9",
+    "ext-gmp": "*",
+    "ext-soap": "*",
+    "ext-sodium": "*",
+    "paragonie/random-lib": "^2.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^10.0",
-    "mkdocs/mkdocs": "*"
+    "phpunit/phpunit": "^10.5"
   },
   "autoload": {
     "psr-4": {
