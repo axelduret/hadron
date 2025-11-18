@@ -169,18 +169,4 @@ This project demonstrates:
 - gRPC `.proto` stubs (for inter-BC)
 - Slim REST endpoints (minimal)
 - MkDocs docs skeleton
-- PHPUnit tests (TDD)
-
-Requirements:
-
-- PHP 8.1+
-- composer
-- Optional: protoc and gRPC PHP plugin for protocol buffers
-
-Install:
-
-```
-composer install
-vendor/bin/phpunit
-php -S 0.0.0.0:8080 -t public
-``` -->
+- PHPUnit tests (TDD) -->
