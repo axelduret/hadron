@@ -1,5 +1,6 @@
 services:
   php:
+    container_name: hadron-php
     image: dunglas/frankenphp
     build:
       context: .
