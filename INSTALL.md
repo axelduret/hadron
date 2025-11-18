@@ -17,5 +17,9 @@ composer install
 ```
 
 ```bash
+vendor\bin\phpunit
+```
+
+```bash
 docker exec -it hadron-php bash
 ```
